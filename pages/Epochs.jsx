@@ -16,9 +16,12 @@ function Epochs({epochs}) {
                 {sortedEpochs.map((epoch, idx) => (
                     <div key={epoch.id} className="relative pl-8 md:pl-10 group">
                         {/* Timeline Dot */}
-                        <div className="absolute w-3 h-3 bg-slate-900 border-2 border-cyan-500 rounded-full -left-[1.5px] top-2 transition-transform duration-300 group-hover:scale-150 group-hover:bg-cyan-400 group-hover:shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>
+                        <div className="absolute w-3 h-3 bg-slate-900 border-2 border-cyan-500 rounded-full -left-[1.5px] top-2 transition-all duration-300 group-hover:scale-150 group-hover:bg-cyan-400 group-hover:shadow-[0_0_15px_rgba(6,182,212,0.9)] z-10">
+                            {/* Ping effect */}
+                            <span className="absolute inset-0 rounded-full bg-cyan-400 animate-ping opacity-0 group-hover:opacity-75 duration-1000"></span>
+                        </div>
 
-                        <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-5 hover:border-cyan-500/50 transition-colors duration-300 backdrop-blur-sm">
+                        <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-5 hover:border-cyan-500/60 transition-all duration-500 hover:shadow-[0_0_20px_-5px_rgba(6,182,212,0.2)] backdrop-blur-sm relative overflow-hidden">
                             <div className="flex flex-wrap justify-between items-start mb-2 gap-2">
                                 <h3 className="text-lg font-semibold text-slate-100 flex items-center gap-2">
                                     <GitCommit size={16} className="text-cyan-500" />

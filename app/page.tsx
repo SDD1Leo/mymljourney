@@ -26,6 +26,36 @@ export default function Home() {
   const [isLoadingEpochs, setIsLoadingEpochs] = useState(true);
   const [isLoadingModels, setIsLoadingModels] = useState(true);
   
+  // Mouse Parallax State
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Typing Animation State
+  const fullTitle = "myMLjourney";
+  const [displayedTitle, setDisplayedTitle] = useState(fullTitle);
+
+  useEffect(() => {
+    setDisplayedTitle(''); // Clear the title on client mount to start the animation
+    
+    let i = 0;
+    const typingInterval = setInterval(() => {
+      if (i < fullTitle.length) {
+        setDisplayedTitle(fullTitle.slice(0, i + 1));
+        i++;
+      } else {
+        clearInterval(typingInterval);
+      }
+    }, 120); // 120ms per character
+    return () => clearInterval(typingInterval);
+  }, []);
+  
   // Admin State
   const [isAdminAuth, setIsAdminAuth] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
@@ -80,19 +110,31 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-300 font-mono selection:bg-cyan-500/30 selection:text-cyan-200">
-      {/* Background grid effect */}
-      <div className="fixed inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none"></div>
+      {/* Ambient Glowing Orbs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-900/20 blur-[120px] mix-blend-screen animate-[pulse_8s_ease-in-out_infinite]"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-emerald-900/10 blur-[120px] mix-blend-screen animate-[pulse_10s_ease-in-out_infinite] delay-1000"></div>
+      </div>
 
-      <div className="relative max-w-5xl mx-auto px-4 py-8 flex flex-col md:flex-row gap-8">
+      {/* Background grid effect with mouse parallax */}
+      <div 
+        className="fixed inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none z-0"
+        style={{ backgroundPosition: `${mousePos.x * 0.05}px ${mousePos.y * 0.05}px` }}
+      ></div>
+
+      <div className="relative z-10 max-w-5xl mx-auto px-4 py-8 flex flex-col md:flex-row gap-8">
         
         {/* SIDEBAR NAVIGATION */}
         <aside className="w-full md:w-64 shrink-0 flex flex-col gap-6">
-          <div className="p-4 border border-cyan-500/30 bg-slate-900/50 rounded-lg shadow-[0_0_15px_rgba(6,182,212,0.15)] backdrop-blur-sm">
+          <div className="p-4 border border-cyan-500/30 hover:border-cyan-400/60 bg-slate-900/50 rounded-lg shadow-[0_0_15px_rgba(6,182,212,0.15)] hover:shadow-[0_0_25px_rgba(6,182,212,0.25)] transition-all duration-500 backdrop-blur-sm group">
             <h1 className="text-xl font-bold text-white flex items-center gap-2 mb-1">
-              <BrainCircuit className="text-cyan-400" />
-              myMLjourney
+              <BrainCircuit className="text-cyan-400 group-hover:animate-pulse" />
+              <span>
+                {displayedTitle}
+                <span className={displayedTitle.length < fullTitle.length ? "animate-pulse text-cyan-400" : "hidden"}>_</span>
+              </span>
             </h1>
-            <p className="text-xs text-cyan-500/70">v_2.0.4 [Status: Training]</p>
+            <p className="text-xs text-cyan-500/70 font-mono">v_2.0.4 [Status: Training]<span className="animate-pulse text-cyan-300 font-bold ml-0.5">_</span></p>
             
             <nav className="mt-8 flex flex-col gap-2">
               <NavButton 
@@ -117,8 +159,8 @@ export default function Home() {
           </div>
 
           {/* Quick Stats Widget */}
-          <div className="hidden md:block p-4 border border-slate-800 bg-slate-900/50 rounded-lg text-xs backdrop-blur-sm text-slate-400">
-            <div className="flex items-center gap-2 mb-3 text-slate-300 border-b border-slate-800 pb-2">
+          <div className="hidden md:block p-4 border border-slate-800 hover:border-slate-700 bg-slate-900/50 rounded-lg text-xs backdrop-blur-sm text-slate-400 transition-colors duration-300">
+            <div className="flex items-center gap-2 mb-3 text-slate-300 border-b border-slate-800 pb-2 font-semibold tracking-wider">
               <Terminal size={14} /> System Status
             </div>
             <div className="flex justify-between mb-1"><span>Epochs Logged:</span> <span className="text-cyan-400">{isLoadingEpochs ? '...' : epochs.length}</span></div>
