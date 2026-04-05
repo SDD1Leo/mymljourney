@@ -1,7 +1,7 @@
 import { Network, Cpu, ExternalLink, Code } from 'lucide-react';
 import { useState } from 'react';
 
-function Models({models}) {
+function Models({ models = [] }) {
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="mb-8 border-b border-slate-800 pb-4">

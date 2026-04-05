@@ -1,6 +1,6 @@
 import { Activity, GitCommit, Database } from 'lucide-react';
 
-function Epochs({epochs}) {
+function Epochs({ epochs = [] }) {
     const sortedEpochs = [...epochs].sort((a, b) => b.id - a.id);
 
     return (

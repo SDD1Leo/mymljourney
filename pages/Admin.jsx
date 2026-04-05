@@ -1,7 +1,7 @@
 import { Settings, Lock, Plus, Trash2, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
-function Admin({ isAuthenticated, handleLogin, adminPassword, setAdminPassword, epochs, setEpochs, models, setModels, logout }) {
+function Admin({ isAuthenticated, handleLogin, adminPassword, setAdminPassword, epochs = [], setEpochs, models = [], setModels, logout }) {
   
   const [newEpoch, setNewEpoch] = useState({ title: '', date: '', description: '', metric: '' });
   const [newModel, setNewModel] = useState({ name: '', type: '', description: '', stats: '', tech: '', link: '' });
