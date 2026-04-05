@@ -17,7 +17,13 @@ function Models({models}) {
                             <h3 className="text-xl font-bold text-slate-100 group-hover:text-emerald-300 transition-colors">
                                 {model.name}
                             </h3>
-                            <ExternalLink size={18} className="text-slate-600 group-hover:text-emerald-400 cursor-pointer" />
+                            {model.link ? (
+                                <a href={model.link} target="_blank" rel="noopener noreferrer" title="View Project" onClick={(e) => e.stopPropagation()}>
+                                    <ExternalLink size={18} className="text-slate-600 group-hover:text-emerald-400 hover:!text-emerald-300 cursor-pointer transition-colors" />
+                                </a>
+                            ) : (
+                                <ExternalLink size={18} className="text-slate-700" />
+                            )}
                         </div>
 
                         <div className="text-xs font-mono text-emerald-500 mb-3 flex items-center gap-1.5">

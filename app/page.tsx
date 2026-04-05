@@ -23,6 +23,8 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState('journey');
   const [epochs, setEpochs] = useState([]);
   const [models, setModels] = useState([]);
+  const [isLoadingEpochs, setIsLoadingEpochs] = useState(true);
+  const [isLoadingModels, setIsLoadingModels] = useState(true);
   
   // Admin State
   const [isAdminAuth, setIsAdminAuth] = useState(false);
@@ -32,7 +34,7 @@ export default function Home() {
   const handleLogin = (e : React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Simple mock password for the prototype
-    if (adminPassword === '@Shaan11') {
+    if (adminPassword === process.env.NEXT_PUBLIC_ROOT_PASSWORD) {
       setIsAdminAuth(true);
       setAdminPassword('');
     } else {
@@ -50,6 +52,8 @@ export default function Home() {
         setEpochs(info.data);
       } catch (error) {
         console.error('Error fetching epochs:', error);
+      } finally {
+        setIsLoadingEpochs(false);
       }
     }
 
@@ -64,9 +68,10 @@ export default function Home() {
         const info = await res.json();
         console.log(info);
         setModels(info.data);
-      }
-      catch (error) {
+      } catch (error) {
         console.error('Error fetching models:', error);
+      } finally {
+        setIsLoadingModels(false);
       }
     }
 
@@ -116,8 +121,8 @@ export default function Home() {
             <div className="flex items-center gap-2 mb-3 text-slate-300 border-b border-slate-800 pb-2">
               <Terminal size={14} /> System Status
             </div>
-            <div className="flex justify-between mb-1"><span>Epochs Logged:</span> <span className="text-cyan-400">{epochs.length}</span></div>
-            <div className="flex justify-between mb-1"><span>Models Active:</span> <span className="text-emerald-400">{models.length}</span></div>
+            <div className="flex justify-between mb-1"><span>Epochs Logged:</span> <span className="text-cyan-400">{isLoadingEpochs ? '...' : epochs.length}</span></div>
+            <div className="flex justify-between mb-1"><span>Models Active:</span> <span className="text-emerald-400">{isLoadingModels ? '...' : models.length}</span></div>
             <div className="flex justify-between"><span>Compute:</span> <span className="text-amber-400">Optimal</span></div>
           </div>
         </aside>
@@ -125,11 +130,11 @@ export default function Home() {
         {/* MAIN CONTENT AREA */}
         <main className="flex-1 min-w-0">
           {activeTab === 'journey' && (
-            <Epochs epochs={epochs} />
+            isLoadingEpochs ? <EpochsSkeleton /> : <Epochs epochs={epochs} />
           )}
 
           {activeTab === 'models' && (
-            <Models models={models} />
+            isLoadingModels ? <ModelsSkeleton /> : <Models models={models} />
           )}
 
           {activeTab === 'admin' && (
@@ -172,5 +177,40 @@ function NavButton({ active, onClick, icon, label }: NavButtonProps) {
       {icon}
       {label}
     </button>
+  );
+}
+
+function EpochsSkeleton() {
+  return (
+    <div className="animate-pulse animate-in fade-in duration-500">
+      <div className="mb-8 border-b border-slate-800 pb-4">
+        <div className="h-8 w-48 bg-slate-800 rounded mb-3"></div>
+        <div className="h-4 w-64 bg-slate-800/50 rounded"></div>
+      </div>
+      <div className="relative border-l border-slate-800 ml-4 md:ml-6 space-y-8 pb-8">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="relative pl-8 md:pl-10">
+            <div className="absolute w-3 h-3 bg-slate-800 rounded-full -left-[1.5px] top-2"></div>
+            <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-5 h-32"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ModelsSkeleton() {
+  return (
+    <div className="animate-pulse animate-in fade-in duration-500">
+      <div className="mb-8 border-b border-slate-800 pb-4">
+        <div className="h-8 w-48 bg-slate-800 rounded mb-3"></div>
+        <div className="h-4 w-64 bg-slate-800/50 rounded"></div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="bg-slate-900/40 border border-slate-800 rounded-lg p-6 h-48"></div>
+        ))}
+      </div>
+    </div>
   );
 }

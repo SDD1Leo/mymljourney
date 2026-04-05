@@ -1,31 +1,50 @@
 import { NextResponse } from "next/server";
-
-const initialEpochs = [
-  { id: 1, date: '2023-05-10', title: 'Initialized Weights', description: 'Started the journey. Learned Python basics, NumPy, and Pandas.', metric: 'Loss: 0.95' },
-  { id: 2, date: '2023-08-22', title: 'First Forward Pass', description: 'Built my first Linear Regression model from scratch. Understood gradient descent.', metric: 'Loss: 0.60' },
-  { id: 3, date: '2024-01-15', title: 'Entering the Hidden Layers', description: 'Mastered PyTorch basics. Built a CNN for image classification (MNIST).', metric: 'Acc: 92%' },
-  { id: 4, date: '2024-06-30', title: 'Attention is All I Need', description: 'Started exploring NLP, Transformers, and playing with HuggingFace APIs.', metric: 'Acc: 96%' },
-];
+import { supabase } from "../../../lib/supabase";
 
 export async function GET() {
+  const { data: epochs, error } = await supabase.from('epochs').select('*');
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
   return NextResponse.json({
-    message: "initial epochs from api",
-    data: initialEpochs,
+    message: "epochs fetched from supabase",
+    data: epochs,
   });
 }
 
 export async function POST(request: Request) {
   const { title, description, metric } = await request.json();
-  const newEpoch = {
-    id: initialEpochs.length + 1,
-    date: new Date().toISOString(),
-    title,
-    description,
-    metric,
-  };
-  initialEpochs.push(newEpoch);
+  
+  const { data, error } = await supabase
+    .from('epochs')
+    .insert([{ date: new Date().toISOString(), title, description, metric }])
+    .select();
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
   return NextResponse.json({
-    message: "new epoch added",
-    data: newEpoch,
+    message: "new epoch added to supabase",
+    data: data[0],
   });
+}
+
+export async function DELETE(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id');
+
+  if (!id) {
+    return NextResponse.json({ error: "Epoch ID is required" }, { status: 400 });
+  }
+
+  const { error } = await supabase.from('epochs').delete().eq('id', id);
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ message: "Epoch deleted successfully" });
 }
